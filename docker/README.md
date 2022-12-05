@@ -4,17 +4,10 @@ Execute docker-compose yaml with
 
 ```sh
 docker-compose up
-```
-
-Then run these commands in order.
-
-PostgreSQL; 
-
-```sql
-create sequence seq_persons start 1 increment 1;
+```ccreate sequence seq_persons start 1 increment 1;
 create table "persons" (id int8 not null, firstname varchar(255) not null, lastname varchar(255) not null, primary key (id));
 ALTER TABLE persons REPLICA IDENTITY FULL;
-INSERT INTO persons (id, firstname, lastname) VALUES (1,'Abdullah','Yıldırım');
+INSERT INTO persons (id, firstname, lastname) VALUES (1,'Yunus Emre','Tosun');
 ```
 
 
@@ -42,7 +35,7 @@ curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 
         "plugin.name": "pgoutput"
 	} 
 }'
-#If 127.0.0.1 doesn't work, try your static ip.
+#If 127.0.0.1 doesn't work, try your static ip ******
 ```
 
 Kafka;

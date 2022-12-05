@@ -8,7 +8,8 @@ services:
      - 2888:2888
      - 3888:3888
 # docker run -it --rm --name zookeeper -p 2181:2181 -p 2888:2888 -p 3888:3888 debezium/zookeeper:1.1
-
+#docker exec -uroot -it kafka /bin/bash bu komutla kafkada root oturumu acilir.
+#kafka container uzerinde jq yu install etmek icin bu gerekli.
   kafka:
     container_name: kafka
     image: debezium/kafka:1.1
@@ -23,7 +24,14 @@ services:
       - $PWD/consume-persons.sh:/kafka/consume-persons.sh
       - $PWD/install-jq.sh:/kafka/install-jq.sh
 # docker run -it --rm --name kafka -p 9092:9092 --link zookeeper:zookeeper debezium/kafka:1.1
-
+#Onemli Notlar !
+#transaction loglar binary halde bulunur.
+#transaction logu tail etmek istiyorsak dblerde bir plugine ihtiyacimiz var.
+#postgresql:10 ve üzerinde default gelen pgoutput plugini mevcut.
+#bu pluginin amaci logical_decoding yapmak yani bizim binary formatta olan logumuzu istedigimiz formata donusturmek.
+#bu senaryo da biz json formatinda kafkaya yolluyor olacagiz.
+#logical_decodingi kullanabilmek icin dbnin "wal_level"nin logic olmasi gerekmekte.show wal_level;
+#postgresql 9.6 dan once bu plugini isteyerek de kuramiyorsunuz.
   postgres:
     container_name: postgresql
     image: debezium/postgres:11
@@ -44,11 +52,8 @@ services:
      - kafka
      - postgres
     environment:
-     - BOOTSTRAP_SERVERS=kafka:9092
-     - CONFIG_STORAGE_TOPIC=debezium_connect_config
-     - OFFSET_STORAGE_TOPIC=debezium_connect_offset
+     - BOOTSTRAP_SERVERS=kafka:9092 #brokerin hostunu burada vermek zorundayiz.
+     - CONFIG_STORAGE_TOPIC=debezium_connect_config # hangi dbleri dinledigi, bu dblere ait user-pw-hostname gibi bilgilerin tutuldugu
+     - OFFSET_STORAGE_TOPIC=debezium_connect_offset #bu dblere ait tablolarda en son okudugu transaction log bilgsinin hangi offsette bulundugu
      - STATUS_STORAGE_TOPIC=debezium_connect_status
 # docker run -it --rm --name connect -p 8083:8083 -e CONFIG_STORAGE_TOPIC=debezium_connect_config -e OFFSET_STORAGE_TOPIC=debezium_connect_offset -e STATUS_STORAGE_TOPIC=debezium_connect_status --link zookeeper:zookeeper --link kafka:kafka --link postgres:postgres debezium/connect:1.1
-
-
-
