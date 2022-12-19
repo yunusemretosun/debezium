@@ -57,8 +57,6 @@ For list all topics and consume created topic, scripts that we create before can
 - List all topics: ```./list-topic.sh```
 - Consume created topic: ```./consume-persons.sh```
 
-For more details, you can review the posts in my medium account.
-[medium/abdullahyildirim](https://medium.com/@abdullahyildirim)# Debezium Demo
 
 debezium-docker installation
 
